@@ -29,7 +29,7 @@ const hasTime = false;
 
 // debug: Use debug/logging features?
 // Includes writing updates to log file, writing html snapshots, and taking screenshots
-const debug = true;
+const debug = false;
 
 
 // ####################################
@@ -44,7 +44,7 @@ const debug = true;
 
 	const page = await browser.newPage();
 
-	if (debug == true){
+	if (debug === true){
 		// await installMouseHelper(page); // Makes mouse visible
 
 		var dir = './htmls';
@@ -88,7 +88,7 @@ const debug = true;
 	);
 
 	//#### LOG / DEBUG
-	if (debug == true) {
+	if (debug === true) {
 		log.info('1. Logged in');
 		html = await page.content();
 		fs.writeFileSync(html_path + '_1_logged_in__' + Math.floor(new Date() / 1000) + '.html', html);
@@ -102,12 +102,12 @@ const debug = true;
 	await page.waitForSelector('#btn_club_select');
 	await page.evaluate(() =>
     // document.querySelector('#club_2B31A274-170B-417E-A5E9-9DF8DA077331').click() for testing
-    document.querySelector('#club_829EE1DA-8793-41D9-BFBA-76EDC57404B6').click()
+    document.querySelector('#club_9C656DA0-B0CB-4CE1-AA1D-DB97BFF31B7F').click()
   );
   
 
 	// #### LOG / DEBUG
-	if (debug == true){	
+	if (debug === true){	
 		log.info('2. Clubs appeared');	
 		fs.writeFileSync(html_path + '_2_clubs_appeared_' + Math.floor(new Date() / 1000) + '.html', html);
 		page.screenshot({path: screenshot_path + '_2_clubs_appeared_' + Math.floor(new Date() / 1000) + '.png'});	
@@ -119,13 +119,13 @@ const debug = true;
 
   // Select the date
   // TODO: select the date that are expected
-	await page.waitForSelector('#date_2020-12-08');
+	await page.waitForSelector('#date_2020-12-10');
   await page.evaluate(() =>
-    document.querySelector('#date_2020-12-08').click()
+    document.querySelector('#date_2020-12-10').click()
   );
   
   	// #### LOG / DEBUG
-	if (debug == true){	
+	if (debug === true){	
 		log.info('3. Time slots appeared');	
 		fs.writeFileSync(html_path + '_3_time_slots_appeared_' + Math.floor(new Date() / 1000) + '.html', html);
     page.screenshot({path: screenshot_path + '_3_time_slots_appeared_' + Math.floor(new Date() / 1000) + '.png'});	
@@ -137,7 +137,8 @@ const debug = true;
   try {
     await page.waitForSelector('.available-slots>.time-slot');
   } catch (e) {
-    console.log('No time left');
+		console.log('No time left');
+		await browser.close();
     return;
   }
   const timeSlotButton = await page.evaluateHandle(() => document.querySelector('.available-slots>.time-slot'));
@@ -149,7 +150,7 @@ const debug = true;
   // console.log(hasTime);
 
   //#### LOG / DEBUG
-  if (debug == true) {
+  if (debug === true) {
     log.info('4. Found and clicked on time slot');
     fs.writeFileSync(html_path + '_4_time_slot_clicked__' + Math.floor(new Date() / 1000) + '.html', html);
     page.screenshot({path: screenshot_path + '_4_time_slot_clicked__' + Math.floor(new Date() / 1000) + '.png'});
@@ -162,6 +163,6 @@ const debug = true;
 	await page.evaluate(() =>
 		document.querySelector('#dialog_book_yes').click()
 	);
-	
-	// await browser.close();
+	console.log('Get it!!!');
+	await browser.close();
 })();
