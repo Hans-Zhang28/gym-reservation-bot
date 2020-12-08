@@ -1,0 +1,15 @@
+{
+  "name": "gym-reservation-bot",
+  "version": "1.0.0",
+  "description": "bot reserves gym time slot",
+  "dependencies": {
+    "puppeteer": "^5.5.0",
+    "puppeteer-extra": "^3.1.15",
+    "puppeteer-extra-plugin-stealth": "^2.6.5",
+    "simple-node-logger": "^18.12.24"
+  },
+  "main": "index.js",
+  "repository": "https://github.com/Hans-Zhang28/gym-reservation-bot.git",
+  "author": "hanszhang007@gmail.com",
+  "license": "MIT"
+}
