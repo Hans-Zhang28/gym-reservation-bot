@@ -118,7 +118,7 @@ const debug = false;
 
 
   // Select the date
-  // TODO: select the date that are expected
+	// const dateToday = new Date().toLocaleDateString('fr-CA'); // YYYY-MM-DD	
 	await page.waitForSelector('#date_2020-12-10');
   await page.evaluate(() =>
     document.querySelector('#date_2020-12-10').click()
@@ -141,13 +141,15 @@ const debug = false;
 		await browser.close();
     return;
   }
-  const timeSlotButton = await page.evaluateHandle(() => document.querySelector('.available-slots>.time-slot'));
-  await timeSlotButton.click();
-  // const latestTime = document.querySelector('.available-slots>.time-slot').dataset.slottime;
-  // const regex = RegExp('at 7:00 AM');
-  // hasTime = latestTime && regex.test(latestTime);
-  // console.log('has Time');
-  // console.log(hasTime);
+	const timeSlotButton = await page.evaluateHandle(() => document.querySelector('.available-slots>.time-slot'));
+  const latestTime = document.querySelector('.available-slots>.time-slot').dataset.slottime;
+  const regex = RegExp(/at [7|8]:[0|3]0 AM/);
+	if (!regex.test(latestTime)) {
+		console.log('No time matched');
+		await browser.close();
+		return;
+	}
+	await timeSlotButton.click();
 
   //#### LOG / DEBUG
   if (debug === true) {
