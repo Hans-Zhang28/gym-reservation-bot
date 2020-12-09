@@ -25,7 +25,7 @@ const pass = 'Xf2w!BWquj6Cr.u';
 
 const url = 'https://myfit4less.gymmanager.com/portal/login.asp';
 
-const hasTime = false;
+const expectedDate = '2020-12-10';
 
 // debug: Use debug/logging features?
 // Includes writing updates to log file, writing html snapshots, and taking screenshots
@@ -70,17 +70,14 @@ const debug = false;
 
   // Login
 	await page.waitForSelector('#emailaddress');
-	await page.waitFor(100);
 
 	// Username
 	await page.focus('#emailaddress');
 	await page.keyboard.type(user);
-	await page.waitFor(200);
 
 	// Password
 	await page.focus('#password')
 	await page.keyboard.type(pass);
-	await page.waitFor(200);
 
 	// Submit
 	await page.evaluate(() =>
@@ -96,13 +93,18 @@ const debug = false;
 	}
 	//#### LOG / DEBUG END
 
-	await page.waitFor(100);
-
 	// Wait for club selector to appear, then select it
-	await page.waitForSelector('#btn_club_select');
+	try {
+		await page.waitForSelector('#btn_club_select', { timeout: 4000 });
+	} catch (e) {
+		console.log('Club options are not available yet');
+		await browser.close();
+    return;
+	}
 	await page.evaluate(() =>
-    // document.querySelector('#club_2B31A274-170B-417E-A5E9-9DF8DA077331').click() for testing
-    document.querySelector('#club_9C656DA0-B0CB-4CE1-AA1D-DB97BFF31B7F').click()
+		// document.querySelector('#club_2B31A274-170B-417E-A5E9-9DF8DA077331').click() // for testing
+		// document.querySelector('#club_12701AF6-13F0-46A9-A2CD-9209AB62F8AC').click() // northfield
+    document.querySelector('#club_9C656DA0-B0CB-4CE1-AA1D-DB97BFF31B7F').click() // erb
   );
   
 
@@ -111,7 +113,6 @@ const debug = false;
 		log.info('2. Clubs appeared');	
 		fs.writeFileSync(html_path + '_2_clubs_appeared_' + Math.floor(new Date() / 1000) + '.html', html);
 		page.screenshot({path: screenshot_path + '_2_clubs_appeared_' + Math.floor(new Date() / 1000) + '.png'});	
-    await page.waitFor(100);
 	}
 	// //#### LOG / DEBUG END
 
@@ -119,30 +120,35 @@ const debug = false;
 
   // Select the date
 	// const dateToday = new Date().toLocaleDateString('fr-CA'); // YYYY-MM-DD	
-	await page.waitForSelector('#date_2020-12-10');
-  await page.evaluate(() =>
-    document.querySelector('#date_2020-12-10').click()
-  );
+	try {
+		await page.waitForSelector(`#date_${expectedDate}`, { timeout: 3000 });
+	} catch (e) {
+		console.log('Date expected is not available yet');
+		await browser.close();
+    return;
+	}
+  await page.evaluate((expectedDate) =>
+    document.querySelector(`#date_${expectedDate}`).click()
+  , expectedDate);
   
   	// #### LOG / DEBUG
 	if (debug === true){	
 		log.info('3. Time slots appeared');	
 		fs.writeFileSync(html_path + '_3_time_slots_appeared_' + Math.floor(new Date() / 1000) + '.html', html);
     page.screenshot({path: screenshot_path + '_3_time_slots_appeared_' + Math.floor(new Date() / 1000) + '.png'});	
-    await page.waitFor(100);
 	}
 	// //#### LOG / DEBUG END
 
   // Wait for all the time slots to show up and then click the earliest one
   try {
-    await page.waitForSelector('.available-slots>.time-slot');
+    await page.waitForSelector('.available-slots>.time-slot', { timeout: 3000 });
   } catch (e) {
 		console.log('No time left');
 		await browser.close();
     return;
   }
 	const timeSlotButton = await page.evaluateHandle(() => document.querySelector('.available-slots>.time-slot'));
-  const latestTime = document.querySelector('.available-slots>.time-slot').dataset.slottime;
+  const latestTime = await page.evaluateHandle(() => document.querySelector('.available-slots>.time-slot').dataset.slottime);
   const regex = RegExp(/at [7|8]:[0|3]0 AM/);
 	if (!regex.test(latestTime)) {
 		console.log('No time matched');
@@ -156,7 +162,6 @@ const debug = false;
     log.info('4. Found and clicked on time slot');
     fs.writeFileSync(html_path + '_4_time_slot_clicked__' + Math.floor(new Date() / 1000) + '.html', html);
     page.screenshot({path: screenshot_path + '_4_time_slot_clicked__' + Math.floor(new Date() / 1000) + '.png'});
-    await page.waitFor(100);
   }
   // //#### LOG / DEBUG END
 
