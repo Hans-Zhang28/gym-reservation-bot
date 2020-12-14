@@ -25,7 +25,7 @@ const pass = 'Xf2w!BWquj6Cr.u';
 
 const url = 'https://myfit4less.gymmanager.com/portal/login.asp';
 
-const expectedDate = '2020-12-10';
+const expectedDate = '2020-12-14';
 
 // debug: Use debug/logging features?
 // Includes writing updates to log file, writing html snapshots, and taking screenshots
@@ -95,7 +95,7 @@ const debug = false;
 
 	// Wait for club selector to appear, then select it
 	try {
-		await page.waitForSelector('#btn_club_select', { timeout: 4000 });
+		await page.waitForSelector('#btn_club_select', { timeout: 3000 });
 	} catch (e) {
 		console.log('Club options are not available yet');
 		await browser.close();
@@ -103,8 +103,7 @@ const debug = false;
 	}
 	await page.evaluate(() =>
 		// document.querySelector('#club_2B31A274-170B-417E-A5E9-9DF8DA077331').click() // for testing
-		// document.querySelector('#club_12701AF6-13F0-46A9-A2CD-9209AB62F8AC').click() // northfield
-    document.querySelector('#club_9C656DA0-B0CB-4CE1-AA1D-DB97BFF31B7F').click() // erb
+    document.querySelector('#club_9C656DA0-B0CB-4CE1-AA1D-DB97BFF31B7F').click()
   );
   
 
@@ -117,11 +116,10 @@ const debug = false;
 	// //#### LOG / DEBUG END
 
 
-
   // Select the date
 	// const dateToday = new Date().toLocaleDateString('fr-CA'); // YYYY-MM-DD	
 	try {
-		await page.waitForSelector(`#date_${expectedDate}`, { timeout: 3000 });
+		await page.waitForSelector(`#date_${expectedDate}`, { timeout: 2000 });
 	} catch (e) {
 		console.log('Date expected is not available yet');
 		await browser.close();
@@ -141,7 +139,7 @@ const debug = false;
 
   // Wait for all the time slots to show up and then click the earliest one
   try {
-    await page.waitForSelector('.available-slots>.time-slot', { timeout: 3000 });
+    await page.waitForSelector('.available-slots>.time-slot', { timeout: 2000 });
   } catch (e) {
 		console.log('No time left');
 		await browser.close();
